@@ -6,6 +6,11 @@ test.describe('Todo App Accessibility Tests', () => {
 	});
 
 	test('has proper ARIA labels and roles', async ({ page }) => {
+		/**
+		 * Test Description: Ensures the todo application meets accessibility standards
+		 * by verifying that all interactive elements have proper ARIA labels and roles.
+		 * This is crucial for screen readers and other assistive technologies.
+		 */
 		// Check for proper ARIA labels
 		await expect(page.getByRole('button', { name: 'Toggle theme' })).toBeVisible();
 
@@ -198,6 +203,13 @@ test.describe('Todo App Edge Cases', () => {
 	});
 
 	test('handles rapid interactions', async ({ page }) => {
+		/**
+		 * Test Description: Verifies that the todo application can handle rapid user interactions
+		 * without breaking or losing data. This test simulates a user quickly adding multiple
+		 * todos and then rapidly marking them as completed to ensure the UI remains responsive
+		 * and the state management works correctly under stress.
+		 */
+
 		// Rapidly add multiple todos and ensure each is visible before continuing
 		for (let i = 0; i < 5; i++) {
 			const todoText = `Rapid todo ${i + 1}`;
@@ -232,6 +244,11 @@ test.describe('Todo App Edge Cases', () => {
 	});
 
 	test('handles empty filter states correctly', async ({ page }) => {
+		/**
+		 * Test Description: Validates the application's behavior when filters are applied
+		 * to empty or filtered todo lists. This ensures proper handling of edge cases
+		 * where certain filter states might result in empty todo lists.
+		 */
 		// Test active filter with no active todos
 		await page.getByPlaceholder('What needs to be done?').fill('Complete me');
 		await page.getByRole('button', { name: 'Add' }).click();

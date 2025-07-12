@@ -43,6 +43,15 @@
 			>
 				{todo.text}
 			</p>
+			{#if todo.description}
+				<p
+					class="mt-1 text-sm transition-all duration-300 {todo.completed
+						? 'text-gray-400 line-through dark:text-gray-500'
+						: 'text-gray-600 dark:text-gray-300'}"
+				>
+					{todo.description}
+				</p>
+			{/if}
 			<p class="mt-1 text-sm text-gray-500 transition-all duration-300 dark:text-gray-400">
 				Created {todo.createdAt.toLocaleDateString()} at {todo.createdAt.toLocaleTimeString()}
 			</p>

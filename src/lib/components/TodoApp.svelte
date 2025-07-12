@@ -10,6 +10,7 @@
 
 	let todos = $state<Todo[]>([]);
 	let newTodoText = $state('');
+	let newTodoDescription = $state('');
 	let filter = $state<'all' | 'active' | 'completed'>('all');
 
 	// Derived states
@@ -46,10 +47,11 @@
 		localStorage.setItem('todos', JSON.stringify(todos));
 	});
 
-	function addTodo(text: string) {
+	function addTodo(text: string, description?: string) {
 		const newTodo: Todo = {
 			id: Date.now(),
 			text,
+			description,
 			completed: false,
 			createdAt: new Date()
 		};
@@ -72,6 +74,10 @@
 		newTodoText = value;
 	}
 
+	function updateNewTodoDescription(description: string) {
+		newTodoDescription = description;
+	}
+
 	function handleFilterChange(newFilter: 'all' | 'active' | 'completed') {
 		filter = newFilter;
 	}
@@ -88,7 +94,13 @@
 	</div>
 
 	<!-- Add Todo Form -->
-	<TodoInput value={newTodoText} onAdd={addTodo} onUpdate={updateNewTodoText} />
+	<TodoInput
+		value={newTodoText}
+		description={newTodoDescription}
+		onAdd={addTodo}
+		onUpdate={updateNewTodoText}
+		onUpdateDescription={updateNewTodoDescription}
+	/>
 
 	<!-- Filters -->
 	<TodoFilters

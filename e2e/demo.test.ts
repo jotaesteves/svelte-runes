@@ -13,6 +13,11 @@ test.describe('Todo App E2E Tests', () => {
 	});
 
 	test('can add a new todo', async ({ page }) => {
+		/**
+		 * Test Description: Verifies the basic functionality of adding a new todo item.
+		 * This test ensures that users can input text, click the add button, and see
+		 * their todo appear in the list while the input is cleared for the next entry.
+		 */
 		const todoInput = page.getByPlaceholder('What needs to be done?');
 		const addButton = page.getByRole('button', { name: 'Add' });
 
@@ -68,6 +73,11 @@ test.describe('Todo App E2E Tests', () => {
 	});
 
 	test('can filter todos', async ({ page }) => {
+		/**
+		 * Test Description: Tests the filtering functionality that allows users to view
+		 * todos by different states (All, Active, Completed). This ensures that the
+		 * filter buttons work correctly and display the appropriate todos.
+		 */
 		// Add multiple todos
 		const todoInput = page.getByPlaceholder('What needs to be done?');
 		const addButton = page.getByRole('button', { name: 'Add' });
@@ -198,11 +208,62 @@ test.describe('Todo App E2E Tests', () => {
 	});
 
 	test('displays creation timestamp', async ({ page }) => {
+		/**
+		 * Test Description: Verifies that each todo item displays a creation timestamp
+		 * showing when it was added, helping users track when tasks were created.
+		 */
 		// Add a todo
 		await page.getByPlaceholder('What needs to be done?').fill('Timestamped todo');
 		await page.getByRole('button', { name: 'Add' }).click();
 
 		// Check that creation date is displayed
 		await expect(page.getByText(/Created/)).toBeVisible();
+	});
+
+	test('can add todo with description', async ({ page }) => {
+		/**
+		 * Test Description: Tests the new description functionality that allows users
+		 * to add optional detailed descriptions to their todo items for better context.
+		 */
+		const todoInput = page.getByPlaceholder('What needs to be done?');
+		const descriptionInput = page.getByPlaceholder('Add a description (optional)...');
+		const addButton = page.getByRole('button', { name: 'Add' });
+
+		// Add a todo with description
+		await todoInput.fill('Buy groceries');
+		await descriptionInput.fill('Need to buy milk, bread, and eggs for the week');
+		await addButton.click();
+
+		// Verify both title and description appear
+		await expect(page.getByText('Buy groceries')).toBeVisible();
+		await expect(page.getByText('Need to buy milk, bread, and eggs for the week')).toBeVisible();
+
+		// Verify inputs are cleared
+		await expect(todoInput).toHaveValue('');
+		await expect(descriptionInput).toHaveValue('');
+	});
+
+	test('can add todo without description', async ({ page }) => {
+		/**
+		 * Test Description: Ensures that the description field is truly optional
+		 * and todos can still be created without descriptions.
+		 */
+		const todoInput = page.getByPlaceholder('What needs to be done?');
+		const addButton = page.getByRole('button', { name: 'Add' });
+
+		// Add a todo without description
+		await todoInput.fill('Simple todo');
+		await addButton.click();
+
+		// Verify todo appears
+		await expect(page.getByText('Simple todo')).toBeVisible();
+
+		// The description area should not show for this todo
+		await expect(
+			page
+				.getByText('Simple todo')
+				.locator('..')
+				.getByText(/Need to buy milk/)
+		).not.toBeVisible();
 	});
 });
