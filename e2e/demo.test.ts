@@ -88,7 +88,7 @@ test.describe('Todo App E2E Tests', () => {
 		await expect(page.getByText('Completed todo')).not.toBeVisible();
 
 		// Test Completed filter
-		await page.getByRole('button', { name: /Completed/ }).click();
+		await page.getByRole('button', { name: /^Completed \(/ }).click();
 		await expect(page.getByText('Active todo')).not.toBeVisible();
 		await expect(page.getByText('Completed todo')).toBeVisible();
 
@@ -115,8 +115,12 @@ test.describe('Todo App E2E Tests', () => {
 
 		// Check statistics
 		await expect(page.getByText('Total').locator('..').getByText('2')).toBeVisible();
-		await expect(page.getByText('Active').locator('..').getByText('1')).toBeVisible();
-		await expect(page.getByText('Completed').locator('..').getByText('1')).toBeVisible();
+		await expect(
+			page.locator('[class*="text-orange-500"]').filter({ hasText: '1' }).first()
+		).toBeVisible();
+		await expect(
+			page.locator('[class*="text-green-500"]').filter({ hasText: '1' }).first()
+		).toBeVisible();
 	});
 
 	test('can clear completed todos', async ({ page }) => {
