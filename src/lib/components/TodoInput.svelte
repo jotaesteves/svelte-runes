@@ -2,7 +2,7 @@
 	interface Props {
 		value: string;
 		description: string;
-		onAdd: (text: string, description?: string) => void;
+		onAdd: (text: string, description: string) => void;
 		onUpdate: (value: string) => void;
 		onUpdateDescription: (description: string) => void;
 	}
@@ -18,7 +18,7 @@
 
 	function handleAdd() {
 		if (value.trim()) {
-			onAdd(value.trim(), description.trim() || undefined);
+			onAdd(value.trim(), description.trim());
 			onUpdate('');
 			onUpdateDescription('');
 		}

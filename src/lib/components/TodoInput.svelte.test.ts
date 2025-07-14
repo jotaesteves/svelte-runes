@@ -6,8 +6,10 @@ import TodoInput from './TodoInput.svelte';
 describe('TodoInput Component', () => {
 	const createProps = (overrides = {}) => ({
 		value: '',
+		description: '',
 		onAdd: vi.fn(),
 		onUpdate: vi.fn(),
+		onUpdateDescription: vi.fn(),
 		...overrides
 	});
 
@@ -26,6 +28,13 @@ describe('TodoInput Component', () => {
 		expect(input).toBeInTheDocument();
 	});
 
+	it('renders description textarea with placeholder text', () => {
+		const props = createProps();
+		const { getByPlaceholderText } = render(TodoInput, props);
+		const textarea = getByPlaceholderText('Add a description (optional)...');
+		expect(textarea).toBeInTheDocument();
+	});
+
 	it('renders add button', () => {
 		const props = createProps();
 		const { getByRole } = render(TodoInput, props);
@@ -40,6 +49,13 @@ describe('TodoInput Component', () => {
 		expect(input).toBeInTheDocument();
 	});
 
+	it('displays current description in textarea', () => {
+		const props = createProps({ description: 'Test description' });
+		const { getByDisplayValue } = render(TodoInput, props);
+		const textarea = getByDisplayValue('Test description');
+		expect(textarea).toBeInTheDocument();
+	});
+
 	it('calls onUpdate when input value changes', async () => {
 		const props = createProps();
 		const { getByPlaceholderText } = render(TodoInput, props);
@@ -50,6 +66,16 @@ describe('TodoInput Component', () => {
 		expect(props.onUpdate).toHaveBeenCalledWith('New todo');
 	});
 
+	it('calls onUpdateDescription when description value changes', async () => {
+		const props = createProps();
+		const { getByPlaceholderText } = render(TodoInput, props);
+		const textarea = getByPlaceholderText('Add a description (optional)...');
+
+		await fireEvent.input(textarea, { target: { value: 'New description' } });
+		await tick();
+		expect(props.onUpdateDescription).toHaveBeenCalledWith('New description');
+	});
+
 	it('calls onAdd when add button is clicked with valid input', async () => {
 		const props = createProps({ value: 'Test todo' });
 		const { getByRole } = render(TodoInput, props);
@@ -57,8 +83,9 @@ describe('TodoInput Component', () => {
 
 		await fireEvent.click(button);
 		await tick();
-		expect(props.onAdd).toHaveBeenCalledWith('Test todo');
+		expect(props.onAdd).toHaveBeenCalledWith('Test todo', '');
 		expect(props.onUpdate).toHaveBeenCalledWith('');
+		expect(props.onUpdateDescription).toHaveBeenCalledWith('');
 	});
 
 	it('calls onAdd when Enter key is pressed with valid input', async () => {
@@ -68,8 +95,21 @@ describe('TodoInput Component', () => {
 
 		await fireEvent.keyDown(input, { key: 'Enter' });
 		await tick();
-		expect(props.onAdd).toHaveBeenCalledWith('Test todo');
+		expect(props.onAdd).toHaveBeenCalledWith('Test todo', '');
 		expect(props.onUpdate).toHaveBeenCalledWith('');
+		expect(props.onUpdateDescription).toHaveBeenCalledWith('');
+	});
+
+	it('calls onAdd with both text and description when provided', async () => {
+		const props = createProps({ value: 'Test todo', description: 'Test description' });
+		const { getByRole } = render(TodoInput, props);
+		const button = getByRole('button', { name: 'Add' });
+
+		await fireEvent.click(button);
+		await tick();
+		expect(props.onAdd).toHaveBeenCalledWith('Test todo', 'Test description');
+		expect(props.onUpdate).toHaveBeenCalledWith('');
+		expect(props.onUpdateDescription).toHaveBeenCalledWith('');
 	});
 
 	it('does not call onAdd when input is empty', async () => {
@@ -99,7 +139,7 @@ describe('TodoInput Component', () => {
 
 		await fireEvent.click(button);
 		await tick();
-		expect(props.onAdd).toHaveBeenCalledWith('Test todo');
+		expect(props.onAdd).toHaveBeenCalledWith('Test todo', '');
 	});
 
 	it('disables add button when input is empty', () => {
